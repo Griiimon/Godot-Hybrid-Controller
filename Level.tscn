@@ -1,0 +1,118 @@
+[gd_scene load_steps=9 format=3 uid="uid://bn57imceamvn7"]
+
+[ext_resource type="Texture2D" uid="uid://0fs13ehtdnf8" path="res://Textures/icon.svg" id="1_023e8"]
+[ext_resource type="PackedScene" uid="uid://0ttvib71ls3p" path="res://Level Objects/Platform.tscn" id="1_vf2ae"]
+[ext_resource type="Script" path="res://Scripts/Player.gd" id="2_gxc8i"]
+[ext_resource type="PackedScene" path="res://Level Objects/Weight 10.tscn" id="4_skisa"]
+[ext_resource type="Script" path="res://Scripts/Invisible Rigidbody.gd" id="4_snr8n"]
+[ext_resource type="PackedScene" path="res://Level Objects/Weight 1.tscn" id="5_tsp6n"]
+[ext_resource type="PackedScene" uid="uid://bi6yk7qer7w03" path="res://Level Objects/Hinge Thingy.tscn" id="7_446yh"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c2b8n"]
+radius = 20.0
+height = 80.0
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Platform" parent="." instance=ExtResource("1_vf2ae")]
+position = Vector2(363, 372)
+
+[node name="Player" type="CharacterBody2D" parent="." node_paths=PackedStringArray("rigidbody")]
+position = Vector2(383, 258)
+collision_mask = 5
+script = ExtResource("2_gxc8i")
+speed = 100.0
+jump_velocity = 800.0
+rigidbody = NodePath("RigidBody2D")
+metadata/_edit_group_ = true
+
+[node name="TextureRect" type="TextureRect" parent="Player"]
+offset_left = -20.0
+offset_top = -80.0
+offset_right = 20.0
+texture = ExtResource("1_023e8")
+expand_mode = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+position = Vector2(0, -40)
+shape = SubResource("CapsuleShape2D_c2b8n")
+debug_color = Color(0, 0.6, 0.701961, 0)
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Player"]
+collision_layer = 2
+collision_mask = 6
+mass = 10.0
+custom_integrator = true
+continuous_cd = 2
+can_sleep = false
+lock_rotation = true
+script = ExtResource("4_snr8n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/RigidBody2D"]
+position = Vector2(0, -40)
+shape = SubResource("CapsuleShape2D_c2b8n")
+debug_color = Color(0.647059, 0.160784, 0.207843, 0.670588)
+
+[node name="RayCast2D" type="RayCast2D" parent="Player"]
+position = Vector2(0, -15)
+target_position = Vector2(0, 18)
+collision_mask = 2
+
+[node name="Platform2" parent="." instance=ExtResource("1_vf2ae")]
+position = Vector2(801, 509)
+
+[node name="Platform3" parent="." instance=ExtResource("1_vf2ae")]
+position = Vector2(892, 226)
+rotation = 0.283333
+
+[node name="Weight 1" parent="." instance=ExtResource("5_tsp6n")]
+position = Vector2(538, 281)
+
+[node name="Weight 10" parent="." instance=ExtResource("4_skisa")]
+position = Vector2(241, 263)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/Panel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+text = "Player Mass"
+
+[node name="Mass Slider" type="HSlider" parent="CanvasLayer/Panel/GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+focus_mode = 1
+max_value = 50.0
+tick_count = 10
+ticks_on_borders = true
+
+[node name="Label2" type="Label" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+text = "Rigidbody Feedback
+"
+
+[node name="Feedback Slider" type="HSlider" parent="CanvasLayer/Panel/GridContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+focus_mode = 1
+max_value = 1.0
+step = 0.1
+tick_count = 10
+ticks_on_borders = true
+
+[node name="Hinge Thingy" parent="." instance=ExtResource("7_446yh")]
+position = Vector2(855, 371)
+
+[connection signal="drag_ended" from="CanvasLayer/Panel/GridContainer/Mass Slider" to="Player" method="_on_mass_slider_drag_ended"]
+[connection signal="drag_ended" from="CanvasLayer/Panel/GridContainer/Feedback Slider" to="Player" method="_on_feedback_slider_drag_ended"]
